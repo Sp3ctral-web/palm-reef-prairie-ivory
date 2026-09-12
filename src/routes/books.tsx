@@ -33,7 +33,7 @@ function BooksBody() {
       <div>
         <h1 className="font-display text-xl font-medium tracking-tight">Оқулықтар</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Справочник класса: предметы по сыныпу и учебник к каждому. Можно выбрать уже
+          Справочник класса: предметы по классу и учебник к каждому. Можно выбрать уже
           добавленное название или вписать своё.
         </p>
       </div>
