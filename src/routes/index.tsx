@@ -2,9 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
 import { ExtraHomework, LessonList } from "@/components/lesson-list";
 import { ReminderBanner, useDeadlineNotifications } from "@/components/reminders";
+import { WeekSwitch } from "@/components/week-switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { addDaysISO, schoolWeekday, todayISO, weekdayName } from "@/lib/dates";
-import { slotsByDay, useHomework, useTimetable } from "@/lib/queries";
+import { fillPeriods, useClassConfig, useHomework, useTimetable, useUpdateSettings } from "@/lib/queries";
 import { useClassStore } from "@/lib/store";
 
 export const Route = createFileRoute("/")({ component: HomePage });
@@ -20,11 +21,15 @@ function HomePage() {
 function HomeBody() {
   const { data: homework, isPending: hwPending } = useHomework();
   const { data: timetable, isPending: ttPending } = useTimetable();
+  const { data: config } = useClassConfig();
+  const updateSettings = useUpdateSettings();
   const done = useClassStore((s) => s.done);
   const today = todayISO();
   const tomorrow = addDaysISO(today, 1);
   const todayWeekday = schoolWeekday(today);
   const tomorrowWeekday = schoolWeekday(tomorrow);
+  const week = config?.cycleWeek === 2 ? 2 : 1;
+  const periodCount = config?.periodCount ?? 8;
 
   useDeadlineNotifications(homework);
 
@@ -38,10 +43,12 @@ function HomeBody() {
     );
   }
 
-  const todaySlots = todayWeekday ? slotsByDay(timetable, todayWeekday) : [];
-  const tomorrowSlots = tomorrowWeekday ? slotsByDay(timetable, tomorrowWeekday) : [];
-  const todaySubjects = new Set(todaySlots.map((s) => s.subject));
-  const tomorrowSubjects = new Set(tomorrowSlots.map((s) => s.subject));
+  const todaySlots = todayWeekday ? fillPeriods(timetable, todayWeekday, week, periodCount) : [];
+  const tomorrowSlots = tomorrowWeekday
+    ? fillPeriods(timetable, tomorrowWeekday, week, periodCount)
+    : [];
+  const todaySubjects = new Set(todaySlots.map((s) => s.subject).filter(Boolean));
+  const tomorrowSubjects = new Set(tomorrowSlots.map((s) => s.subject).filter(Boolean));
 
   const extra = (homework ?? []).filter((item) => {
     if (done[String(item.id)] && item.dueOn < today) return false;
@@ -59,6 +66,11 @@ function HomeBody() {
 
   return (
     <div className="flex flex-col gap-8">
+      <WeekSwitch
+        value={week}
+        current={week}
+        onChange={(next) => updateSettings.mutate({ cycleWeek: next })}
+      />
       <ReminderBanner items={homework ?? []} />
       <LessonList
         title={todayTitle}
