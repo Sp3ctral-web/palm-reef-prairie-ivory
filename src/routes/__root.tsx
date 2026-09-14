@@ -4,7 +4,7 @@ import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { AppProviders } from "@/components/providers";
 import appCss from "../styles.css?url";
 
-const APP_NAME = "Задано";
+const APP_NAME = "\u0417\u0430\u0434\u0430\u043d\u043e";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -15,7 +15,7 @@ export const Route = createRootRoute({
       { name: "theme-color", content: "#f3efe6" },
       {
         name: "description",
-        content: "Общая доска домашних заданий и расписание класса",
+        content: "\u041e\u0431\u0449\u0430\u044f \u0434\u043e\u0441\u043a\u0430 \u0434\u043e\u043c\u0430\u0448\u043d\u0438\u0445 \u0437\u0430\u0434\u0430\u043d\u0438\u0439 \u0438 \u0440\u0430\u0441\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043a\u043b\u0430\u0441\u0441\u0430",
       },
     ],
     links: [
